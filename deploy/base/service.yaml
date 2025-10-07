@@ -17,7 +17,7 @@ metadata:
   name: rollouts-nodeport
 spec:
   ports:
-  - port: 30000
+  - port: 80
     targetPort: 8080
     nodePort: 30000
     protocol: TCP
