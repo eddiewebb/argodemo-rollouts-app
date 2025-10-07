@@ -9,3 +9,9 @@ images:
 - name: ghcr.io/eddiewebb/rollouts
   newName: ghcr.io/eddiewebb/rollouts
   newTag: v0.0.1
+
+labels:
+  - pairs:
+      rollouts-app/stage: "staging"
+    includeSelectors: true  # Apply label to selectors (e.g., Deployment's selector)
+    includeTemplates: true   # Apply label to po
