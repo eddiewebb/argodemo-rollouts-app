@@ -18,3 +18,20 @@ spec:
           name: rollouts-app
           ports:
             - containerPort: 8080
+          env:
+            - name: COLOR
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['rollouts-app/color']
+            - name: SEMVER
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['rollouts-app/semver']
+            - name: STAGE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['rollouts-app/stage']
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

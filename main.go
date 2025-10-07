@@ -39,6 +39,9 @@ var (
 	}
 	envLatency   float64
 	envErrorRate int
+	namespace    = os.Getenv("NAMESPACE")
+	stage		= os.Getenv("STAGE")
+	semver		= os.Getenv("SEMVER")
 )
 
 func init() {
@@ -77,6 +80,7 @@ func main() {
 	router := http.NewServeMux()
 	router.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
 	router.HandleFunc("/color", getColor)
+	router.HandleFunc("/env", getEnv)
 
 	server := &http.Server{
 		Addr:    listenAddr,
@@ -189,6 +193,15 @@ func getColor(w http.ResponseWriter, r *http.Request) {
 	}
 	printColor(colorToReturn, w, statusCode)
 	log.Printf("%d - %s%s\n", statusCode, colorToReturn, delayLengthStr)
+}
+
+func getEnv(w http.ResponseWriter, r *http.Request) {
+
+	statusCode := http.StatusOK
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(statusCode)
+	fmt.Fprintf(w, "{\"namespace\":\"%s\",\"semver\":\"%s\",\"stage\":\"%s\"}", namespace, semver, stage)
 }
 
 func printColor(colorToPrint string, w http.ResponseWriter, statusCode int) {
