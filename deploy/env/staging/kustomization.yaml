@@ -11,26 +11,26 @@ images:
   newTag: v0.0.1
 
 labels:
-  - pairs:
-      rollouts-app/stage: "staging"
-    includeTemplates: true   # Apply label to po
+- includeTemplates: true
+  pairs:
+    rollouts-app/stage: staging
 
 replacements:
-  - source:
+- source:
+    fieldPath: spec.template.spec.containers.[name=rollouts-app].image
+    kind: Deployment
+    options:
+      delimiter: ':'
+      index: 1
+  targets:
+  - fieldPaths:
+    - metadata.labels.[app.kubernetes.io/version]
+    - spec.template.metadata.labels.[app.kubernetes.io/version]
+    options:
+      create: true
+    select:
       kind: Deployment
-      fieldPath: spec.template.spec.containers.[name=rollouts-app].image
-      options:
-        delimiter: ":"
-        index: 1 
-    targets:
-      - select:
-          name: rollouts-app
-          kind: Deployment
-        fieldPaths:
-          - metadata.labels.[app.kubernetes.io/version]
-          - spec.template.metadata.labels.[app.kubernetes.io/version] 
-        options:
-          create: true
+      name: rollouts-app
 
-patchesStrategicMerge:
-- nodeport.yaml
+patches:
+- path: nodeport.yaml
