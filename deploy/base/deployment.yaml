@@ -17,4 +17,4 @@ spec:
         - image: ghcr.io/eddiewebb/rollouts
           name: rollouts-app
           ports:
-            - containerPort: 80
+            - containerPort: 8080
