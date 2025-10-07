@@ -31,3 +31,6 @@ replacements:
           - spec.template.metadata.labels.[app.kubernetes.io/version] 
         options:
           create: true
+
+patchesStrategicMerge:
+- nodeport.yaml

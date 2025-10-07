@@ -5,25 +5,32 @@ resources:
 - ../../base
 
 namespace: demo-prod
+images:
+- name: ghcr.io/eddiewebb/rollouts
+  newName: ghcr.io/eddiewebb/rollouts
+  newTag: v0.0.1
 
 labels:
-  - pairs:
-      rollouts-app/stage: "prod"
-    includeTemplates: true   # Apply label to po
+- includeTemplates: true
+  pairs:
+    rollouts-app/stage: prod
 
 replacements:
-  - source:
+- source:
+    fieldPath: spec.template.spec.containers.[name=rollouts-app].image
+    kind: Deployment
+    options:
+      delimiter: ':'
+      index: 1
+  targets:
+  - fieldPaths:
+    - metadata.labels.[app.kubernetes.io/version]
+    - spec.template.metadata.labels.[app.kubernetes.io/version]
+    options:
+      create: true
+    select:
       kind: Deployment
-      fieldPath: spec.template.spec.containers.[name=rollouts-app].image
-      options:
-        delimiter: ":"
-        index: 1 
-    targets:
-      - select:
-          name: rollouts-app
-          kind: Deployment
-        fieldPaths:
-          - metadata.labels.[app.kubernetes.io/version]
-          - spec.template.metadata.labels.[app.kubernetes.io/version] 
-        options:
-          create: true
+      name: rollouts-app
+
+patches:
+- path: nodeport.yaml
