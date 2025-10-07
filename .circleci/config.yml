@@ -1,0 +1,43 @@
+version: 2.1
+
+workflows:
+  main:
+    when:
+      not: 
+        or:
+          - matches: 
+              pattern: "^env/.$"
+              value: << pipeline.git.branch >> 
+          - matches: 
+              pattern: "^kargo/.$"
+              value: << pipeline.git.branch >> 
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test  
+          context:
+            - Akuity-Demo-Context
+
+jobs:
+  test:
+    docker:
+      - image: cimg/go:1.25
+    steps:
+      - checkout
+      - run:
+          name: Run Tests
+          command: |
+            go test ./...
+  deploy:
+    docker:
+      - image: cimg/go:1.25
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Deploy to GH Container Registry
+          command: | 
+            docker build -t ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>> .  
+            docker login ghcr.io -u eddiewebb --password $GH_PAT
+            docker push ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>>  
