@@ -53,6 +53,7 @@ class App {
 	}
 
 	start() {
+		this.displayEnv();
 		this.interval = setInterval(() => {
 			this.load();
 		}, REFRESH_INTERVAL_MS);
@@ -112,6 +113,22 @@ class App {
 		rows = Math.min(rows, MAX_ROWS);
 		rows = Math.max(rows, MIN_ROWS);
 		return rows;
+	}
+
+	displayEnv() {
+		fetch('./env', {
+	        method: "GET",
+	    })
+	    .then(function(res) {
+	       return res.json().then(env => ({ env, res }))
+	    }).then((function(res) {
+	    	const {env} = res;
+			const fields = ["stage", "semver","namespace"];
+			fields.forEach(f => {
+				const container = document.getElementById(f);
+		    	container.innerHTML = `${f.charAt(0).toUpperCase() + f.slice(1)}: ${env[f]}`;
+			})
+	    }).bind(this));
 	}
 }
 
