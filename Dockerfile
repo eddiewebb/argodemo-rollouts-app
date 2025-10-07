@@ -18,4 +18,9 @@ ENV ERROR_RATE=${ERROR_RATE}
 ARG LATENCY
 ENV LATENCY=${LATENCY}
 
+# These are overriden by deployment manifests
+ENV STAGE=LOCAL
+ENV SEMVER=LOCAL
+ENV NAMESPACE=NA
+
 ENTRYPOINT [ "/rollouts-demo" ]
