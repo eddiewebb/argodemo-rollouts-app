@@ -31,8 +31,6 @@ replacements:
           kind: Deployment
         fieldPaths:
           - metadata.labels.[app.kubernetes.io/version]
-          - metadata.labels.[rollouts-app/semver]
           - spec.template.metadata.labels.[app.kubernetes.io/version] 
-          - spec.template.metadata.labels.[rollouts-app/semver]
         options:
           create: true
