@@ -32,5 +32,5 @@ replacements:
       kind: Deployment
       name: rollouts-app
 
-#patches:
-#- path: nodeport.yaml
+patches:
+- path: nodeport.yaml
