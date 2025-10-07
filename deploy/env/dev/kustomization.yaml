@@ -13,7 +13,6 @@ images:
 labels:
   - pairs:
       rollouts-app/stage: "dev"
-    includeSelectors: true  # Apply label to selectors (e.g., Deployment's selector)
     includeTemplates: true   # Apply label to po
 
 
