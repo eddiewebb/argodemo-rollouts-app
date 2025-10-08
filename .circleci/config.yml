@@ -42,17 +42,4 @@ jobs:
             docker build --build-arg COLOR=${APP_COLOR} -t ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>> .  
             docker login ghcr.io -u eddiewebb --password $GH_PAT
             docker push ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>>  
-      - run:
-          name: Update Kargo Alias
-          command: |
-            arch=$(uname -m)
-            [ "$arch" = "x86_64" ] && arch=amd64
-            curl -L -o kargo https://github.com/akuity/kargo/releases/latest/download/kargo-"$(uname -s | tr '[:upper:]' '[:lower:]')-${arch}"
-            chmod +x kargo
-            DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>> | cut -d':' -f2)
-            echo "Image Digest: $DIGEST"
-            source .circleci/pickcolor.sh << pipeline.number >>
-            kargo update freight \
-            --project=kargo-demo \
-            --name=$DIGEST \
-            --new-alias=<< pipeline.number >>-${APP_COLOR}
+     
