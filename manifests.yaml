@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/version: 1.0.77
+    rollouts-app/stage: prod
+  name: rollouts-app
+  namespace: demo-prod
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: rollouts-app
+  template:
+    metadata:
+      labels:
+        app: rollouts-app
+        app.kubernetes.io/version: 1.0.77
+        rollouts-app/stage: prod
+    spec:
+      containers:
+      - env:
+        - name: SEMVER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['app.kubernetes.io/version']
+        - name: STAGE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['rollouts-app/stage']
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ghcr.io/eddiewebb/rollouts:1.0.77
+        name: rollouts-app
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    rollouts-app/stage: prod
+  name: rollouts-svc
+  namespace: demo-prod
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: rollouts-app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    rollouts-app/stage: prod
+  name: rollouts-nodeport
+  namespace: demo-prod
+spec:
+  ports:
+  - nodePort: 30002
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: rollouts-app
+  type: NodePort
