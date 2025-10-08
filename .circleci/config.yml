@@ -2,14 +2,13 @@ version: 2.1
 
 workflows:
   main:
-    when:
-      not: 
+    unless:
         or:
           - matches: 
-              pattern: "^env/.$"
+              pattern: "^env/.*"
               value: << pipeline.git.branch >> 
           - matches: 
-              pattern: "^kargo/.$"
+              pattern: "^kargo/.*"
               value: << pipeline.git.branch >> 
     jobs:
       - test
