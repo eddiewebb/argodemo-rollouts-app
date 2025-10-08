@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Update Kargo Alias
           command: |
-            DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>> | cut -d'@' -f2)
+            DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>> | cut -d':' -f2)
             echo "Image Digest: $DIGEST"
             source .circleci/pickcolor.sh << pipeline.number >>
             kargo update freight \
