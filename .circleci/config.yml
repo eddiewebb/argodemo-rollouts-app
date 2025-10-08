@@ -51,4 +51,4 @@ jobs:
             kargo update freight \
             --project=kargo-demo \
             --name=$DIGEST \
-            --new-alias=<< pipeline.number >>-${<APP_COLOR}
+            --new-alias=<< pipeline.number >>-${APP_COLOR}
