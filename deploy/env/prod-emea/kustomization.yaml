@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - ../../base
 
+namespace: demo-prod-emea
 images:
 - name: ghcr.io/eddiewebb/rollouts
   newName: ghcr.io/eddiewebb/rollouts
