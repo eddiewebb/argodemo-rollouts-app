@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: rollouts-app
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount | default 1 }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -14,7 +14,7 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: ghcr.io/eddiewebb/rollouts
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           name: rollouts-app
           ports:
             - containerPort: 8080
@@ -22,11 +22,11 @@ spec:
             - name: SEMVER
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.labels['app.kubernetes.io/version']
+                  fieldPath: {{.Values.image.tag}}
             - name: STAGE
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.labels['rollouts-app/stage']
+                  fieldPath: {{.Values.kargo.stage}}
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
