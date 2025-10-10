@@ -20,13 +20,9 @@ spec:
             - containerPort: 8080
           env:
             - name: SEMVER
-              valueFrom:
-                fieldRef:
-                  fieldPath: "{{.Values.image.tag}}"
+              value: "{{.Values.image.tag}}"
             - name: STAGE
-              valueFrom:
-                fieldRef:
-                  fieldPath: {{.Values.kargo.stage}}
+              value: {{.Values.kargo.stage}}
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
