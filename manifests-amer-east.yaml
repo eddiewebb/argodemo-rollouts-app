@@ -1,0 +1,60 @@
+---
+# Source: deploy/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollouts-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: rollouts-app
+---
+# Source: deploy/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    rollouts-app/stage: dev
+  name: rollouts-nodeport
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    nodePort: 30002
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: rollouts-app
+---
+# Source: deploy/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollouts-app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: rollouts-app
+  template:
+    metadata:
+      labels:
+        app: rollouts-app
+    spec:
+      containers:
+        - image: "ghcr.io/eddiewebb/rollouts:1.0.106"
+          name: rollouts-app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SEMVER
+              value: "1.0.106"
+            - name: STAGE
+              value: prod
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
