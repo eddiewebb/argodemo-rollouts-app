@@ -26,4 +26,4 @@ spec:
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.namespaces
+                  fieldPath: metadata.namespace
