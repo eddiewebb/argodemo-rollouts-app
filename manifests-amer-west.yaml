@@ -11,23 +11,6 @@ spec:
   selector:
     app: rollouts-app
 ---
-# Source: deploy/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    rollouts-app/stage: dev
-  name: rollouts-nodeport
-spec:
-  ports:
-  - port: 80
-    targetPort: 8080
-    nodePort: 30003
-    protocol: TCP
-  type: NodePort
-  selector:
-    app: rollouts-app
----
 # Source: deploy/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -45,13 +28,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:1.0.118"
+        - image: "ghcr.io/eddiewebb/rollouts:1.0.119"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "1.0.118"
+              value: "1.0.119"
             - name: STAGE
               value: prod
             - name: NAMESPACE
