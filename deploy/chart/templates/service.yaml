@@ -8,19 +8,3 @@ spec:
     targetPort: 8080
   selector:
     app: rollouts-app
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    rollouts-app/stage: dev
-  name: rollouts-nodeport
-spec:
-  ports:
-  - port: 80
-    targetPort: 8080
-    nodePort: {{ .Values.nodePort | default 30000 }}
-    protocol: TCP
-  type: NodePort
-  selector:
-    app: rollouts-app
