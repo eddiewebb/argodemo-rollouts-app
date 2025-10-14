@@ -58,13 +58,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:126-red"
+        - image: "ghcr.io/eddiewebb/rollouts:129-green"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "126-red"
+              value: "129-green"
             - name: STAGE
               value: dev
             - name: NAMESPACE
@@ -75,8 +75,8 @@ spec:
   revisionHistoryLimit: 3
   strategy:
     canary: #Indicates that the rollout should use the Canary strategy
-      canaryService: canary-service  # required
-      stableService: stable-service  # required
+      canaryService: rollouts-svc-canary  # required
+      stableService: rollouts-svc-stable # required
       trafficRouting:
         nginx:
           stableIngress: stable-ingress
