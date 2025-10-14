@@ -1,7 +1,7 @@
 const MIN_ROWS = 4;
 const MAX_ROWS = 14;
 
-const REFRESH_INTERVAL_MS = 500;
+const REFRESH_INTERVAL_MS = 50;
 
 const PIXEL_TIMEOUT = 4000;
 const PIXEL_SIZE = 35;
