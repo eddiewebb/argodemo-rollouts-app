@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: production
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "{{ kargo.stage }}.rollouts.k8s.orb.local"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: rollouts-svc
+            port:
+              number: 80
