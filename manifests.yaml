@@ -38,7 +38,7 @@ spec:
         path: /
         backend:
           service:
-            name: rollouts-svc
+            name: rollouts-svc-stable
             port:
               number: 80
 ---
@@ -58,13 +58,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:129-green"
+        - image: "ghcr.io/eddiewebb/rollouts:130-blue"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "129-green"
+              value: "130-blue"
             - name: STAGE
               value: dev
             - name: NAMESPACE
