@@ -12,6 +12,6 @@ spec:
         path: /
         backend:
           service:
-            name: rollouts-svc
+            name: rollouts-svc-stable
             port:
               number: 80
