@@ -3,13 +3,44 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rollouts-svc
+  name: rollouts-svc-stable
 spec:
   ports:
   - port: 80
     targetPort: 8080
   selector:
     app: rollouts-app
+---
+# Source: deploy/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollouts-svc-canary
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: rollouts-app
+---
+# Source: deploy/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stable-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "staging.rollouts.k8s.orb.local"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: rollouts-svc-stable
+            port:
+              number: 80
 ---
 # Source: deploy/templates/rollout.yaml
 apiVersion: argoproj.io/v1alpha1
@@ -27,13 +58,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:122-yellow"
+        - image: "ghcr.io/eddiewebb/rollouts:131-purple"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "122-yellow"
+              value: "131-purple"
             - name: STAGE
               value: staging
             - name: NAMESPACE
@@ -44,6 +75,11 @@ spec:
   revisionHistoryLimit: 3
   strategy:
     canary: #Indicates that the rollout should use the Canary strategy
+      canaryService: rollouts-svc-canary  # required
+      stableService: rollouts-svc-stable # required
+      trafficRouting:
+        nginx:
+          stableIngress: stable-ingress
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
