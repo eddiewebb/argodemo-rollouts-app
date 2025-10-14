@@ -38,7 +38,7 @@ jobs:
           name: Deploy to GH Container Registry
           command: | 
             source .circleci/pickcolor.sh << pipeline.number >>
-            docker build --build-arg COLOR=${APP_COLOR} -t ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>> .  
+            docker build --build-arg COLOR=${APP_COLOR} -t ghcr.io/eddiewebb/rollouts:<<pipeline.number>>-${APP_COLOR} .  
             docker login ghcr.io -u eddiewebb --password $GH_PAT
-            docker push ghcr.io/eddiewebb/rollouts:1.0.<<pipeline.number>>  
+            docker push ghcr.io/eddiewebb/rollouts:<<pipeline.number>>-${APP_COLOR}
      
