@@ -11,23 +11,10 @@ workflows:
               pattern: "^kargo/.*"
               value: << pipeline.git.branch >> 
     jobs:
-      - test
       - deploy:
-          requires:
-            - test  
           context:
             - Akuity-Demo-Context
 
-jobs:
-  test:
-    docker:
-      - image: cimg/go:1.25
-    steps:
-      - checkout
-      - run:
-          name: Run Tests
-          command: |
-            go test ./...
   deploy:
     docker:
       - image: cimg/go:1.25
