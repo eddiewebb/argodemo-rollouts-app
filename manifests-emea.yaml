@@ -48,7 +48,7 @@ kind: Rollout
 metadata:
   name: rollouts-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: rollouts-app
@@ -58,13 +58,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:133-orange"
+        - image: "ghcr.io/eddiewebb/rollouts:135-green"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "133-orange"
+              value: "135-green"
             - name: STAGE
               value: prod-emea
             - name: NAMESPACE
