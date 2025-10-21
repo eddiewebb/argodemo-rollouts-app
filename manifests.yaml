@@ -48,7 +48,7 @@ kind: Rollout
 metadata:
   name: rollouts-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: rollouts-app
