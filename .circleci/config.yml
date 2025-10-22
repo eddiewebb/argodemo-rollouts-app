@@ -1,31 +1,16 @@
 version: 2.1
 
+setup: true
+
+orbs:
+  path-filtering: circleci/path-filtering@2.1.0
+
 workflows:
-  main:
-    unless:
-        or:
-          - matches: 
-              pattern: "^env/.*"
-              value: << pipeline.git.branch >> 
-          - matches: 
-              pattern: "^kargo/.*"
-              value: << pipeline.git.branch >> 
+  setup-workflow:
     jobs:
-      - deploy:
-          context:
-            - Akuity-Demo-Context
-jobs:
-  deploy:
-    docker:
-      - image: cimg/go:1.25
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Deploy to GH Container Registry
-          command: | 
-            source .circleci/pickcolor.sh << pipeline.number >>
-            docker build --build-arg COLOR=${APP_COLOR} -t ghcr.io/eddiewebb/rollouts:<<pipeline.number>>-${APP_COLOR} .  
-            docker login ghcr.io -u eddiewebb --password $GH_PAT
-            docker push ghcr.io/eddiewebb/rollouts:<<pipeline.number>>-${APP_COLOR}
-     
+      - path-filtering/filter:
+          base-revision: main
+          config-path: .circleci/build.yml
+          mapping: |
+            deploy/.* build-image false
+            .* build-image true
