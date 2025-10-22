@@ -13,4 +13,5 @@ workflows:
           config-path: .circleci/build.yml
           mapping: |
             deploy/.* build-image false
+            .circleci/.* build-image false
             .* build-image true
