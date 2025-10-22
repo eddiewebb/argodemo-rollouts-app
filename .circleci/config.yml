@@ -14,3 +14,5 @@ workflows:
           exclude: |
             deploy/.*
             .circleci/.*
+          mapping: |
+            .*
