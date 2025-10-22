@@ -1,0 +1,37 @@
+version: 2.1
+
+parameters:
+  build-image:
+    type: boolean
+    default: false
+
+workflows:
+  main:
+    unless:
+        or:
+          - not: <<pipeline.parameters.build-image>>
+          - matches: 
+              pattern: "^env/.*"
+              value: << pipeline.git.branch >> 
+          - matches: 
+              pattern: "^kargo/.*"
+              value: << pipeline.git.branch >> 
+    jobs:
+      - deploy:
+          context:
+            - Akuity-Demo-Context
+jobs:
+  deploy:
+    docker:
+      - image: cimg/go:1.25
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Deploy to GH Container Registry
+          command: | 
+            source .circleci/pickcolor.sh << pipeline.number >>
+            docker build --build-arg COLOR=${APP_COLOR} -t ghcr.io/eddiewebb/rollouts:<<pipeline.number>>-${APP_COLOR} .  
+            docker login ghcr.io -u eddiewebb --password $GH_PAT
+            docker push ghcr.io/eddiewebb/rollouts:<<pipeline.number>>-${APP_COLOR}
+     
