@@ -15,4 +15,4 @@ workflows:
             deploy/.*
             .circleci/.*
           mapping: |
-            .*
+            .* build-image true

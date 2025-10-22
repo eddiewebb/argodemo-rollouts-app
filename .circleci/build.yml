@@ -1,9 +1,15 @@
 version: 2.1
 
+parameters:
+  build-image:
+    type: boolean
+    default: false
+
 workflows:
   main:
     unless:
         or:
+          - not: <<pipeline.parameters.build-image>>
           - matches: 
               pattern: "^env/.*"
               value: << pipeline.git.branch >> 
