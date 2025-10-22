@@ -11,7 +11,6 @@ workflows:
       - path-filtering/filter:
           base-revision: main
           config-path: .circleci/build.yml
-          mapping: |
-            deploy/.* build-image false
-            .circleci/.* build-image false
-            .* build-image true
+          exclude: |
+            deploy/.*
+            .circleci/.*
