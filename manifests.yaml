@@ -5,7 +5,7 @@ kind: Service
 metadata:
   name: rollouts-svc-stable
   annotations:
-    prometheus.io/fastscrape: true
+    prometheus.io/fastscrape: 'true'
 spec:
   ports:
   - port: 80
@@ -19,7 +19,7 @@ kind: Service
 metadata:
   name: rollouts-svc-canary
   annotations:
-    prometheus.io/fastscrape: true
+    prometheus.io/fastscrape: 'true'
 spec:
   ports:
   - port: 80
