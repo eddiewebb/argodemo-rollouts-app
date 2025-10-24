@@ -50,7 +50,7 @@ spec:
             duration: 20s 
         - setWeight: 50
         - pause:
-            duration: 20s 
+            duration: 1m 
         - setWeight: 75
         - pause:
             duration: 20s 
