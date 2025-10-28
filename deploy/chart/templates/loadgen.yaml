@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: loadgen
+spec:
+  metrics:
+  - name: load-gen
+    provider:
+      job:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: loadgen
+                image: alpine:latest
+                command: [ab,"-n20","https://{{  .Release.Namespace }}.rollouts.k8s.orb.local"]
+              restartPolicy: Never
+          backoffLimit: 1

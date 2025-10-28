@@ -38,7 +38,7 @@ spec:
       analysis:
         templates:
         - templateName: success-rate
-        startingStep: 2
+        startingStep: 3
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
@@ -46,6 +46,9 @@ spec:
         - pause:
             duration: 20s 
         - setWeight: 20
+        - analysis:
+          templates:
+          - templateName: loadgen
         - pause:
             duration: 20s 
         - setWeight: 50
