@@ -35,7 +35,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: "rollouts-app.rollouts.k8s.orb.local"
+  - host: "demo-staging.rollouts.k8s.orb.local"
     http:
       paths:
       - pathType: Prefix
@@ -64,9 +64,9 @@ spec:
       prometheus:
         address: http://prometheus-server.prometheus.svc.cluster.local
         query: |
-          sum(rate(nginx_ingress_controller_requests{namespace="rollouts-app",status="200",canary="rollouts-app-rollouts-svc-canary-80"}[30s]))
+          sum(rate(nginx_ingress_controller_requests{namespace="demo-staging",status="200",canary="demo-staging-rollouts-svc-canary-80"}[30s]))
           /
-          sum(rate(nginx_ingress_controller_requests{namespace="rollouts-app",canary="rollouts-app-rollouts-svc-canary-80"}[30s]))
+          sum(rate(nginx_ingress_controller_requests{namespace="demo-staging",canary="demo-staging-rollouts-svc-canary-80"}[30s]))
 ---
 # Source: deploy/templates/rollout.yaml
 apiVersion: argoproj.io/v1alpha1
