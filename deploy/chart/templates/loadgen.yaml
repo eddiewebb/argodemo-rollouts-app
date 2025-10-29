@@ -12,7 +12,7 @@ spec:
             spec:
               containers:
               - name: loadgen
-                image: alpine:latest
-                command: [ab,"-n20","https://{{  .Release.Namespace }}.rollouts.k8s.orb.local"]
+                image: jordi/ab
+                command: [ab,"-n20","https://{{  .Release.Namespace }}.rollouts.k8s.orb.local/"]
               restartPolicy: Never
           backoffLimit: 1

@@ -38,7 +38,7 @@ spec:
       analysis:
         templates:
         - templateName: success-rate
-        startingStep: 3
+        startingStep: 4
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
