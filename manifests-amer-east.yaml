@@ -64,9 +64,9 @@ spec:
       prometheus:
         address: http://prometheus-server.prometheus.svc.cluster.local
         query: |
-          sum(rate(nginx_ingress_controller_requests{namespace="demo-prod-amer-east",status="200",canary="demo-prod-amer-east-rollouts-svc-canary-80"}[30s]))
+          ( sum(rate(nginx_ingress_controller_requests{namespace="demo-prod-amer-east",status="200",canary="demo-prod-amer-east-rollouts-svc-canary-80"}[30s])) + 1 )
           /
-          sum(rate(nginx_ingress_controller_requests{namespace="demo-prod-amer-east",canary="demo-prod-amer-east-rollouts-svc-canary-80"}[30s]))
+          ( sum(rate(nginx_ingress_controller_requests{namespace="demo-prod-amer-east",canary="demo-prod-amer-east-rollouts-svc-canary-80"}[30s])) + 1 )
 ---
 # Source: deploy/templates/loadgen.yaml
 apiVersion: argoproj.io/v1alpha1
@@ -83,8 +83,8 @@ spec:
             spec:
               containers:
               - name: loadgen
-                image: alpine:latest
-                command: [ab,"-n20","https://demo-prod-amer-east.rollouts.k8s.orb.local"]
+                image: jordi/ab
+                command: [ab,"-n20","https://demo-prod-amer-east.rollouts.k8s.orb.local/"]
               restartPolicy: Never
           backoffLimit: 1
 ---
@@ -104,13 +104,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:152-yellow"
+        - image: "ghcr.io/eddiewebb/rollouts:167-purple"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "152-yellow"
+              value: "167-purple"
             - name: STAGE
               value: prod-amer-east
             - name: NAMESPACE
@@ -129,7 +129,7 @@ spec:
       analysis:
         templates:
         - templateName: success-rate
-        startingStep: 3
+        startingStep: 4
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
