@@ -83,8 +83,8 @@ spec:
             spec:
               containers:
               - name: loadgen
-                image: alpine:latest
-                command: [ab,"-n20","https://demo-dev.rollouts.k8s.orb.local"]
+                image: jordi/ab
+                command: [ab,"-n20","https://demo-dev.rollouts.k8s.orb.local/"]
               restartPolicy: Never
           backoffLimit: 1
 ---
@@ -129,7 +129,7 @@ spec:
       analysis:
         templates:
         - templateName: success-rate
-        startingStep: 3
+        startingStep: 4
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
