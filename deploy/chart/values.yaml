@@ -10,3 +10,6 @@ image:
 
 kargo:
   stage: dev
+
+ingress:
+  root_domain: rollouts.k8s.orb.local
