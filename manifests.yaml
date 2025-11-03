@@ -35,7 +35,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: "abc-demo-staging.rollouts.k8s.orb.local"
+  - host: "abc-demo-staging.akpdemoapps.link"
     http:
       paths:
       - pathType: Prefix
