@@ -84,7 +84,7 @@ spec:
               containers:
               - name: loadgen
                 image: jordi/ab
-                command: [ab,"-n20","https://abc-demo-dev.rollouts.k8s.orb.local/"]
+                command: [ab,"-n20","http://abc-demo-dev.akpdemoapps.link/"]
               restartPolicy: Never
           backoffLimit: 1
 ---
