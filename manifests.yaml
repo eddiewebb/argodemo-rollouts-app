@@ -65,7 +65,7 @@ spec:
               containers:
               - name: loadgen
                 image: jordi/ab
-                command: [ab,"-n20","http://vgs-demo-dev.akpdemoapps.link/"]
+                command: [ab,"-n20","https://akpdemoapps.link/vgs-demo-dev"]
               restartPolicy: Never
           backoffLimit: 1
 ---
