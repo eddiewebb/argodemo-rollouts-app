@@ -6,6 +6,7 @@ spec:
   parentRefs:
   - name: gateway
     namespace: nginx-gateway
+    kind: Gateway
   hostnames:
   - "{{  .Release.Namespace }}.{{ .Values.ingress.root_domain }}"
   rules:
