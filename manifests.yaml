@@ -87,6 +87,12 @@ spec:
     - path:
         type: PathPrefix
         value: /abc-demo-dev
+    filters:
+      - type: URLRewrite
+        urlRewrite:
+          path:
+            replacePrefixMatch: /
+            type: ReplacePrefixMatch
     backendRefs:
     - name: rollouts-svc-stable
       port: 80
