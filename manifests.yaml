@@ -78,6 +78,7 @@ spec:
   parentRefs:
   - name: gateway
     namespace: nginx-gateway
+    kind: Gateway
   hostnames:
   - "vgs-demo-dev.akpdemoapps.link"
   rules:
