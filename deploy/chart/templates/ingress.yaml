@@ -1,18 +1,17 @@
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: rollouts
+  name: stable-ingress
 spec:
-  parentRefs:
-  - name: gateway
-    namespace: nginx-gateway
-  hostnames:
-  - "{{  .Release.Namespace }}.{{ .Values.ingress.root_domain }}"
+  ingressClassName: nginx
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: rollouts-svc-stable
-      port: 80
+  - host: "{{  .Release.Namespace }}.{{ .Values.ingress.root_domain }}"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: rollouts-svc-stable
+            port:
+              number: 80
