@@ -15,12 +15,6 @@ spec:
     - path:
         type: PathPrefix
         value: /{{  .Release.Namespace }}
-    filters:
-      - type: URLRewrite
-        urlRewrite:
-          path:
-            replacePrefixMatch: /
-            type: ReplacePrefixMatch
     backendRefs:
     - name: rollouts-svc-stable
       port: 80
