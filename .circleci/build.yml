@@ -16,6 +16,12 @@ workflows:
           - matches: 
               pattern: "^kargo/.*"
               value: << pipeline.git.branch >> 
+          - matches: 
+              pattern: "^change/.*"
+              value: << pipeline.git.branch >> 
+          - matches: 
+              pattern: "^locked-env/.*"
+              value: << pipeline.git.branch >> 
     jobs:
       - deploy:
           context:

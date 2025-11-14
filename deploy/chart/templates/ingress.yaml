@@ -5,11 +5,11 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: "{{  .Release.Namespace }}.{{ .Values.ingress.root_domain }}"
+  - host: "{{ .Values.ingress.root_domain }}"
     http:
       paths:
       - pathType: Prefix
-        path: /
+        path: /{{  .Release.Namespace }}
         backend:
           service:
             name: rollouts-svc-stable
