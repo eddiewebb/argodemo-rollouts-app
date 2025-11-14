@@ -4,17 +4,16 @@ metadata:
   name: rollouts
 spec:
   parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: gateway
-      namespace: nginx-gateway
+  - name: gateway
+    namespace: nginx-gateway
+    kind: Gateway
   hostnames:
-  - "{{ .Values.ingress.root_domain }}"
+  - "{{  .Release.Namespace }}.{{ .Values.ingress.root_domain }}"
   rules:
   - matches:
     - path:
         type: PathPrefix
-        value: /{{  .Release.Namespace }}
+        value: /
     backendRefs:
     - name: rollouts-svc-stable
       port: 80
