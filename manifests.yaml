@@ -104,13 +104,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/eddiewebb/rollouts:212-yellow"
+        - image: "ghcr.io/eddiewebb/rollouts:215-purple"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "212-yellow"
+              value: "215-purple"
             - name: STAGE
               value: dev
             - name: NAMESPACE
