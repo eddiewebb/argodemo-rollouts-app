@@ -52,16 +52,6 @@ jobs:
   #         subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
   #         subject-digest: ${{ steps.push.outputs.digest }}
   #         push-to-registry: true
-  cleanup-untagged:
-    name: ghcr.io cleanup action
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-    steps:
-      - uses: dataaxiom/ghcr-cleanup-action@v1
-        with:
-          delete-untagged: true
-          dry-run: true
   cleanup:
     name: ghcr.io cleanup action
     runs-on: ubuntu-latest
@@ -72,5 +62,5 @@ jobs:
         with:
           keep-n-tagged: 5
           delete-ghost-images: true
+          delete-orphaned-images: true
           delete-untagged: true
-          dry-run: true
