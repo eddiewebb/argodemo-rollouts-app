@@ -42,7 +42,7 @@ jobs:
           context: .
           push: true
           build-args: |
-            APP_COLOR=${{ env.APP_COLOR }}
+            COLOR=${{ env.APP_COLOR }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ github.run_number }}-${{ env.APP_COLOR }}
