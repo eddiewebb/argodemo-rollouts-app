@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: dataaxiom/ghcr-cleanup-action@v1
         with:
-          keep-n-tagged: 6
+          keep-n-tagged: 5
           keep-n-untagged: 0
           delete-untagged: true
           dry-run: true
