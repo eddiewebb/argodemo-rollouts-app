@@ -67,4 +67,4 @@ jobs:
           delete-ghost-images: true
           delete-orphaned-images: true
           delete-untagged: true
-          image: ${{ env.IMAGE_NAME}}
+          packages: ${{ env.IMAGE_NAME}}
