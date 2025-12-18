@@ -1,4 +1,8 @@
 
 
-artifactUrl: ghcr.io/akuity/sedemo-monorepo-rollouts-app
-namespace: eddies-team
+image:
+  repository: ghcr.io/akuity/sedemo-monorepo-rollouts-app
+ingress:
+  custom_prefix: eddie
+rollouts:
+  enabled: true
