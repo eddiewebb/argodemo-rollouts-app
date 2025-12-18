@@ -14,7 +14,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}-rollouts-app
 
 jobs:
   publish:
@@ -67,3 +67,4 @@ jobs:
           delete-ghost-images: true
           delete-orphaned-images: true
           delete-untagged: true
+          image: ${{ env.IMAGE_NAME}}
