@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v4
         id: push
         with:
-          context: .
+          context: rollouts-app
           push: true
           build-args: |
             COLOR=${{ env.APP_COLOR }}
