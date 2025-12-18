@@ -11,7 +11,7 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: '-app'
+    app: 'eddies-team-app'
 ---
 # Source: apps-template/templates/service.yaml
 apiVersion: v1
@@ -25,7 +25,7 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: '-app'
+    app: 'eddies-team-app'
 ---
 # Source: apps-template/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -92,20 +92,20 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: "-app"
+  name: "eddies-team-app"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: "-app"
+      app: "eddies-team-app"
   template:
     metadata:
       labels:
-        app: "-app"
+        app: "eddies-team-app"
     spec:
       containers:
         - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:8-blue"
-          name: "-app"
+          name: "eddies-team-app"
           ports:
             - containerPort: 8080
           env:
