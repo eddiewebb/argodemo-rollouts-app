@@ -18,6 +18,9 @@ env:
 
 jobs:
   publish:
+    defaults:
+      run:
+        working-directory: rollouts-app
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
