@@ -3,6 +3,8 @@
 image:
   repository: ghcr.io/akuity/sedemo-monorepo-rollouts-app
 ingress:
-  custom_prefix: eddie
+  custom_prefix: eddie-rollout
 rollouts:
-  enabled: false
+  enabled: true
+environments:
+  staging: false
