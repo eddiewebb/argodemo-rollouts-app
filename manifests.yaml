@@ -104,13 +104,13 @@ spec:
         app: "eddies-team-app"
     spec:
       containers:
-        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:8-blue"
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:9-yellow"
           name: "eddies-team-app"
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "8-blue"
+              value: "9-yellow"
             - name: STAGE
               value: dev
             - name: NAMESPACE
