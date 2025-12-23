@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'rollouts-app/**'
 permissions:
   packages: write
   attestations: write
