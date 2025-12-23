@@ -1,0 +1,65 @@
+---
+# Source: apps-template/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-stable
+  annotations:
+    prometheus.io/fastscrape: 'true'
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: 'team-eddie-app'
+---
+# Source: apps-template/templates/rollout.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "team-eddie-app"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "team-eddie-app"
+  template:
+    metadata:
+      labels:
+        app: "team-eddie-app"
+    spec:
+      containers:
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:14-blue"
+          name: "team-eddie-app"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SEMVER
+              value: "14-blue"
+            - name: STAGE
+              value: prod
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+  minReadySeconds: 30
+  revisionHistoryLimit: 3
+---
+# Source: apps-template/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stable-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "prod.eddie.akpdemoapps.link"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: svc-stable
+            port:
+              number: 80
