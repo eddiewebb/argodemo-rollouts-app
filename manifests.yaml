@@ -104,13 +104,13 @@ spec:
         app: "team-eddie-canary-app"
     spec:
       containers:
-        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:14-blue"
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:13-green"
           name: "team-eddie-canary-app"
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "14-blue"
+              value: "13-green"
             - name: STAGE
               value: prod
             - name: NAMESPACE
