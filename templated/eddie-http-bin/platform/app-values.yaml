@@ -1,5 +1,7 @@
 image:
   repository: kennethreitz/httpbin
+  selectionStrategy: Digest
+  tag: latest
 ingress:
   custom_prefix: http-bin
 rollouts:
