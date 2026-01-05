@@ -78,7 +78,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: gh-image-creds
-              key: pat
+              key: password
   backoffLimit: 4
 ---
 # Source: apps-template/templates/ingress.yaml
@@ -107,17 +107,13 @@ kind: ExternalSecret
 metadata:
   name: kargo-admin-creds
 spec:
-  refreshInterval: 1h # How often to refresh the secret from AWS Secrets Manager
+  refreshInterval: 24h # How often to refresh the secret from AWS Secrets Manager
   # our actual secret store is in EKS cluster default NS
   secretStoreRef:
     name: aws-secretsmanager
     kind: ClusterSecretStore
   target:
     name: kargo-admin-creds
-    template:
-      engineVersion: v2
-      data: 
-        password: ""
   data:
   - secretKey: password
     remoteRef:
@@ -131,24 +127,15 @@ kind: ExternalSecret
 metadata:
   name: gh-image-creds
 spec:
-  refreshInterval: 1h # How often to refresh the secret from AWS Secrets Manager
+  refreshInterval: 24h # How often to refresh the secret from AWS Secrets Manager
   # our actual secret store is in EKS cluster default NS
   secretStoreRef:
     name: aws-secretsmanager
     kind: ClusterSecretStore
   target:
     name: gh-image-creds
-    template:
-      engineVersion: v2
-      metadata:
-        labels:
-          kargo.akuity.io/cred-type: image
-      data: 
-        repoURL: ghcr.io/akuity/sedemo-rollouts-app
-        username: eddiewebb
-        password: ""
   data:
-  - secretKey: pat
+  - secretKey: password
     remoteRef:
       key: kargo-pats
       property: eddies-gh-pat
