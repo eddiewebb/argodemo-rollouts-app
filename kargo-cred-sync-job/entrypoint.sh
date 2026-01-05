@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 
 
 kargo login https://kargo.akpdemoapps.link/ --admin --password $KARGO_PASSWORD
