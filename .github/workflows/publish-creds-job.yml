@@ -54,4 +54,4 @@ jobs:
           delete-ghost-images: true
           delete-orphaned-images: true
           delete-untagged: true
-          packages: kargo-cred-sync-job
+          packages: sedemo-monorepo-kargo-cred-sync-job
