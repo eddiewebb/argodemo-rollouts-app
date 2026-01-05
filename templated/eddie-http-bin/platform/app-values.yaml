@@ -1,9 +1,0 @@
-image:
-  repository: kennethreitz/httpbin
-  selectionStrategy: Digest
-  tag: latest
-  containerPort: 80
-ingress:
-  custom_prefix: http-bin
-rollouts:
-  enabled: false
