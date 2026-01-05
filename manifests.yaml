@@ -1,18 +1,4 @@
 ---
-# Source: apps-template/templates/secrets-role-binding.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: secret-reader-binding-team-eddie-canary-dev
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: secret-reader
-subjects:
-- kind: ServiceAccount
-  name: default
-  namespace: 'team-eddie-canary-dev'
----
 # Source: apps-template/templates/service.yaml
 apiVersion: v1
 kind: Service
@@ -137,6 +123,60 @@ spec:
                 command: [ab,"-n20","http://dev.eddie-rollout.akpdemoapps.link/"]
               restartPolicy: Never
           backoffLimit: 1
+---
+# Source: apps-template/templates/secrets-role-binding.yaml
+# secret created by ESO, pushed into app specific namespace for use by kargo cred job
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kargo-admin-creds
+spec:
+  refreshInterval: 1h # How often to refresh the secret from AWS Secrets Manager
+  # our actual secret store is in EKS cluster default NS
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore
+  target:
+    name: kargo-admin-creds
+    template:
+      engineVersion: v2
+      data: 
+        password: ""
+  data:
+  - secretKey: password
+    remoteRef:
+      key: kargo-admin-password
+      property: password
+---
+# Source: apps-template/templates/secrets-role-binding.yaml
+# secret created by ESO, pushed into app specific namespace for use by kargo cred job
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: gh-image-creds
+  namespace: kargo-secrets-namespace
+spec:
+  refreshInterval: 1h # How often to refresh the secret from AWS Secrets Manager
+  # our actual secret store is in EKS cluster default NS
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore
+  target:
+    name: gh-image-creds
+    template:
+      engineVersion: v2
+      metadata:
+        labels:
+          kargo.akuity.io/cred-type: image
+      data: 
+        repoURL: ghcr.io/akuity/sedemo-rollouts-app
+        username: eddiewebb
+        password: ""
+  data:
+  - secretKey: pat
+    remoteRef:
+      key: kargo-pats
+      property: eddies-gh-pat
 ---
 # Source: apps-template/templates/rollout.yaml
 apiVersion: argoproj.io/v1alpha1
