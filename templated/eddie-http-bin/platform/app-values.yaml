@@ -1,5 +1,5 @@
 image:
-  repository: kennethreitz/httpbin:latest
+  repository: kennethreitz/httpbin
 ingress:
   custom_prefix: http-bin
 rollouts:
