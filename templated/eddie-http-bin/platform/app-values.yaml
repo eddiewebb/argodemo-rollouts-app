@@ -1,0 +1,6 @@
+image:
+  repository: kennethreitz/httpbin
+ingress:
+  custom_prefix: http-bin
+rollouts:
+  enabled: false
