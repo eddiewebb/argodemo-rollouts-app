@@ -7,3 +7,6 @@ ingress:
   custom_prefix: http-bin
 rollouts:
   enabled: false
+
+environments:
+  staging: false
