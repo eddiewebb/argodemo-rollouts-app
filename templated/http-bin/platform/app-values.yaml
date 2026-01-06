@@ -11,4 +11,4 @@ rollouts:
   enabled: false
 
 environments:
-  staging: false
+  staging: true
