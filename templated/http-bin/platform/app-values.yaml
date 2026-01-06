@@ -3,6 +3,8 @@ image:
   selectionStrategy: Digest
   tag: latest
   containerPort: 80
+  memoryLimit: 128Mi
+  cpuLimit: 150m
 ingress:
   custom_prefix: http-bin
 rollouts:
