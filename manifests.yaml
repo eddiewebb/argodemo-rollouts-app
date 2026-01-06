@@ -44,11 +44,11 @@ spec:
                   fieldPath: metadata.namespace
           resources:
             limits:
-              memory: 28Mi
-              cpu: 50m
+              memory: 128Mi
+              cpu: 150m
             requests:
-              memory: 28Mi
-              cpu: 50m
+              memory: 128Mi
+              cpu: 150m
   minReadySeconds: 30
   revisionHistoryLimit: 3
 ---
