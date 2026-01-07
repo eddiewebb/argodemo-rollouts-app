@@ -1,0 +1,148 @@
+---
+# Source: apps-template/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-stable
+  annotations:
+    prometheus.io/fastscrape: 'true'
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: 'team-eddie-app'
+---
+# Source: apps-template/templates/rollout.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "team-eddie-app"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "team-eddie-app"
+  template:
+    metadata:
+      labels:
+        app: "team-eddie-app"
+    spec:
+      containers:
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:14-blue"
+          name: "team-eddie-app"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SEMVER
+              value: "14-blue"
+            - name: STAGE
+              value: prod
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            limits:
+              memory: 28Mi
+              cpu: 50m
+            requests:
+              memory: 28Mi
+              cpu: 50m
+  minReadySeconds: 30
+  revisionHistoryLimit: 3
+---
+# Source: apps-template/templates/kargo-creds-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sync-kargo-creds
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    #argocd.argoproj.io/hook: PostSync. #app depends on branch created by kargo workflow, and won't be healthy until then, post sync wont work
+    # instead we set a sync-wave on the app of apps to ensure it comes after the kargo project
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: kargo-sync
+        image: "ghcr.io/akuity/sedemo-monorepo-kargo-cred-sync-job:latest"
+        imagePullPolicy: Always
+        env:
+        - name: GITHUB_USER
+          value: "eddiewebb"
+        - name: GITHUB_ORG
+          value: "akuity"
+        - name: KARGO_PROJECT
+          value: "team-eddie"
+        - name: KARGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kargo-admin-creds
+              key: password
+        - name: GITHUB_PAT
+          valueFrom:
+            secretKeyRef:
+              name: gh-image-creds
+              key: password
+  backoffLimit: 4
+---
+# Source: apps-template/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stable-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "prod.eddie.akpdemoapps.link"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: svc-stable
+            port:
+              number: 80
+---
+# Source: apps-template/templates/secrets-role-binding.yaml
+# secret created by ESO, pushed into app specific namespace for use by kargo cred job
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kargo-admin-creds
+spec:
+  refreshInterval: 24h # How often to refresh the secret from AWS Secrets Manager
+  # our actual secret store is in EKS cluster default NS
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore
+  target:
+    name: kargo-admin-creds
+  data:
+  - secretKey: password
+    remoteRef:
+      key: kargo-admin-password
+      property: password
+---
+# Source: apps-template/templates/secrets-role-binding.yaml
+# secret created by ESO, pushed into app specific namespace for use by kargo cred job
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: gh-image-creds
+spec:
+  refreshInterval: 24h # How often to refresh the secret from AWS Secrets Manager
+  # our actual secret store is in EKS cluster default NS
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore
+  target:
+    name: gh-image-creds
+  data:
+  - secretKey: password
+    remoteRef:
+      key: kargo-pats
+      property: eddies-gh-pat
