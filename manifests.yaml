@@ -193,6 +193,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          resources:
+            limits:
+              memory: 28Mi
+              cpu: 50m
+            requests:
+              memory: 28Mi
+              cpu: 50m
   minReadySeconds: 30
   revisionHistoryLimit: 3
   strategy:
