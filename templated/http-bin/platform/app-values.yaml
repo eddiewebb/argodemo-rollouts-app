@@ -1,3 +1,6 @@
+project:
+  group: akuityio:doesnotexist
+
 image:
   repository: kennethreitz/httpbin
   selectionStrategy: Digest
