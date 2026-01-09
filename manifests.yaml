@@ -93,8 +93,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: stable-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "dev.http-bin.akpdemoapps.link"
+    secretName: tls-secret
   rules:
   - host: "dev.http-bin.akpdemoapps.link"
     http:
