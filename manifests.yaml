@@ -11,26 +11,26 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: 'template-app'
+    app: 'team-eddie-app'
 ---
 # Source: apps-template/templates/rollout.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "template-app"
+  name: "team-eddie-app"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: "template-app"
+      app: "team-eddie-app"
   template:
     metadata:
       labels:
-        app: "template-app"
+        app: "team-eddie-app"
     spec:
       containers:
         - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:14-blue"
-          name: "template-app"
+          name: "team-eddie-app"
           ports:
             - containerPort: 8080
           env:
@@ -75,7 +75,7 @@ spec:
         - name: GITHUB_ORG
           value: "akuity"
         - name: KARGO_PROJECT
-          value: "template"
+          value: "team-eddie"
         - name: KARGO_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -93,8 +93,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: stable-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "dev.eddie.akpdemoapps.link"
+    secretName: tls-secret
   rules:
   - host: "dev.eddie.akpdemoapps.link"
     http:
