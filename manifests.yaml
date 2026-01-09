@@ -68,8 +68,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: stable-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - "dev.eddie-rollout.akpdemoapps.link"
+    secretName: tls-secret
   rules:
   - host: "dev.eddie-rollout.akpdemoapps.link"
     http:
@@ -120,7 +126,7 @@ spec:
               containers:
               - name: loadgen
                 image: jordi/ab
-                command: [ab,"-n20","http://dev.eddie-rollout.akpdemoapps.link/"]
+                command: [ab,"-n20","https://dev.eddie-rollout.akpdemoapps.link/"]
               restartPolicy: Never
           backoffLimit: 1
 ---
