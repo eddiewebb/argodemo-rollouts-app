@@ -11,7 +11,7 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: 'template-app'
+    app: 'team-eddie-canary-app'
 ---
 # Source: apps-template/templates/service.yaml
 apiVersion: v1
@@ -25,7 +25,7 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: 'template-app'
+    app: 'team-eddie-canary-app'
 ---
 # Source: apps-template/templates/kargo-creds-job.yaml
 apiVersion: batch/v1
@@ -50,7 +50,7 @@ spec:
         - name: GITHUB_ORG
           value: "akuity"
         - name: KARGO_PROJECT
-          value: "template"
+          value: "team-eddie-canary"
         - name: KARGO_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -174,20 +174,20 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: "template-app"
+  name: "team-eddie-canary-app"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: "template-app"
+      app: "team-eddie-canary-app"
   template:
     metadata:
       labels:
-        app: "template-app"
+        app: "team-eddie-canary-app"
     spec:
       containers:
         - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:14-blue"
-          name: "template-app"
+          name: "team-eddie-canary-app"
           ports:
             - containerPort: 8080
           env:
