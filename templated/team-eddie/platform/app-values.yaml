@@ -1,4 +1,5 @@
-
+project:
+  group: sedemo-team-eddie
 
 image:
   repository: ghcr.io/akuity/sedemo-monorepo-rollouts-app
