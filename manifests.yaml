@@ -1,0 +1,240 @@
+---
+# Source: apps-template/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-stable
+  annotations:
+    prometheus.io/fastscrape: 'true'
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: 'blake-test-app'
+---
+# Source: apps-template/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-canary
+  annotations:
+    prometheus.io/fastscrape: 'true'
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: 'blake-test-app'
+---
+# Source: apps-template/templates/kargo-creds-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sync-kargo-creds
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    #argocd.argoproj.io/hook: PostSync. #app depends on branch created by kargo workflow, and won't be healthy until then, post sync wont work
+    # instead we set a sync-wave on the app of apps to ensure it comes after the kargo project
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: kargo-sync
+        image: "ghcr.io/akuity/sedemo-monorepo-kargo-cred-sync-job:latest"
+        imagePullPolicy: Always
+        env:
+        - name: GITHUB_USER
+          value: "eddiewebb"
+        - name: GITHUB_ORG
+          value: "akuity"
+        - name: KARGO_PROJECT
+          value: "blake-test"
+        - name: KARGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kargo-admin-creds
+              key: password
+        - name: GITHUB_PAT
+          valueFrom:
+            secretKeyRef:
+              name: gh-image-creds
+              key: password
+  backoffLimit: 4
+---
+# Source: apps-template/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stable-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - "dev.blake.akpdemoapps.link"
+    secretName: tls-secret
+  rules:
+  - host: "dev.blake.akpdemoapps.link"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: svc-stable
+            port:
+              number: 80
+---
+# Source: apps-template/templates/analysis.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  metrics:
+  - name: success-rate
+    interval: 15s
+    # NOTE: prometheus queries return results in the form of a vector.
+    # So it is common to access the index 0 of the returned array to obtain the value
+    # If there is no traffic to demo app during rollout we will have empty set.
+    successCondition: len(result) == 0 || result[0] >= 0.95
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://prometheus-server.prometheus.svc.cluster.local
+        query: |
+          ( sum(rate(nginx_ingress_controller_requests{namespace="blake-test-dev",status="200",canary="blake-test-dev-svc-canary-80"}[30s])) + 1 )
+          /
+          ( sum(rate(nginx_ingress_controller_requests{namespace="blake-test-dev",canary="blake-test-dev-svc-canary-80"}[30s])) + 1 )
+---
+# Source: apps-template/templates/loadgen.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: loadgen
+spec:
+  metrics:
+  - name: load-gen
+    provider:
+      job:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: loadgen
+                image: jordi/ab
+                command: [ab,"-n20","https://dev.blake.akpdemoapps.link/"]
+              restartPolicy: Never
+          backoffLimit: 1
+---
+# Source: apps-template/templates/secrets-role-binding.yaml
+# secret created by ESO, pushed into app specific namespace for use by kargo cred job
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kargo-admin-creds
+spec:
+  refreshInterval: 24h # How often to refresh the secret from AWS Secrets Manager
+  # our actual secret store is in EKS cluster default NS
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore
+  target:
+    name: kargo-admin-creds
+  data:
+  - secretKey: password
+    remoteRef:
+      key: kargo-admin-password
+      property: password
+---
+# Source: apps-template/templates/secrets-role-binding.yaml
+# secret created by ESO, pushed into app specific namespace for use by kargo cred job
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: gh-image-creds
+spec:
+  refreshInterval: 24h # How often to refresh the secret from AWS Secrets Manager
+  # our actual secret store is in EKS cluster default NS
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore
+  target:
+    name: gh-image-creds
+  data:
+  - secretKey: password
+    remoteRef:
+      key: kargo-pats
+      property: eddies-gh-pat
+---
+# Source: apps-template/templates/rollout.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: "blake-test-app"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "blake-test-app"
+  template:
+    metadata:
+      labels:
+        app: "blake-test-app"
+    spec:
+      containers:
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:16-purple"
+          name: "blake-test-app"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SEMVER
+              value: "16-purple"
+            - name: STAGE
+              value: dev
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            limits:
+              memory: 28Mi
+              cpu: 1m
+            requests:
+              memory: 28Mi
+              cpu: 1m
+  minReadySeconds: 30
+  revisionHistoryLimit: 3
+  strategy:
+    canary: #Indicates that the rollout should use the Canary strategy
+      canaryService: svc-canary  # required
+      stableService: svc-stable # required
+      trafficRouting:
+        nginx:
+          stableIngress: stable-ingress
+      analysis:
+        templates:
+        - templateName: success-rate
+        startingStep: 4
+      maxSurge: '25%'
+      maxUnavailable: 0
+      steps:
+        - setWeight: 10
+        - pause:
+            duration: 20s 
+        - setWeight: 20
+        - analysis:
+            templates:
+            - templateName: loadgen
+        - pause:
+            duration: 20s 
+        - setWeight: 50
+        - pause:
+            duration: 1m 
+        - setWeight: 75
+        - pause:
+            duration: 20s 
+        - setWeight: 100
