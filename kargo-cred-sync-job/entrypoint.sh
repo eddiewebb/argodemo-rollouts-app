@@ -41,15 +41,17 @@ else
     echo -e "\t skipping image creds for image URL ${image_url} because not ghcr.io/akuity"
 fi
 
-echo -e "\tCreating GH Webhook"
-wh_url=`kargo get projectconfig --project $project -ojson | jq -r '.status.webhookReceivers[] | select(.name == "gh-wh-receiver").url'`
-echo -e "\tURL: $wh_url"
-curl -Ls \
-        -X POST \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${GITHUB_PAT}" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        "https://api.github.com/repos/$GITHUB_ORG/sedemo-rollouts-app/hooks" \
-        -d '{"name":"Kargo-Webhook","active":true,"events":["push"],"config":{"url":"'$wh_url'","content_type":"json","secret":"thisisverysecret"}}'
 
-echo "Done."
+cat <<EOF > slack.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: slack-token
+  namespace: $project
+  labels:
+    kargo.akuity.io/cred-type: generic
+stringData:
+  apiKey: $SLACK_TOKEN
+EOF
+
+kargo apply -f slack.yaml
