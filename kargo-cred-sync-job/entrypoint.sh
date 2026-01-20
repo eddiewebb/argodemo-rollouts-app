@@ -41,6 +41,7 @@ stringData:
   username: ${GITHUB_USER}
   password: ${GITHUB_PAT}
   repoURL: https://github.com/akuity/
+  repoURLIsRegex: "true"
 EOF
 
 kargo apply -f repo.yaml
