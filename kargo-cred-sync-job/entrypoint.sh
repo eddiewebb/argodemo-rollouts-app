@@ -35,7 +35,7 @@ metadata:
 stringData:
   username: ${GITHUB_USER}
   password: ${GITHUB_PAT}
-  repoURL: ghcr.io/akuity
+  repoURL: https://github.com/akuity/
 EOF
 
 kargo apply -f repo.yaml
