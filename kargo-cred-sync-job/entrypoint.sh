@@ -24,6 +24,11 @@ EOF
 
 kargo apply -f ghcr.yaml
 
+if [ $? -ne 0 ]; then
+  echo "Failed to apply ghcr-token secret"
+  exit 1
+fi
+
 cat <<EOF > repo.yaml
 apiVersion: v1
 kind: Secret
@@ -39,6 +44,10 @@ stringData:
 EOF
 
 kargo apply -f repo.yaml
+if [ $? -ne 0 ]; then
+  echo "Failed to apply repo-token secret"
+  exit 1
+fi
 
 cat <<EOF > slack.yaml
 apiVersion: v1
@@ -53,3 +62,7 @@ stringData:
 EOF
 
 kargo apply -f slack.yaml
+if [ $? -ne 0 ]; then
+  echo "Failed to apply slack-token secret"
+  exit 1
+fi
