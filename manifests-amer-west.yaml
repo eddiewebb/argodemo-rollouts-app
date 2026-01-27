@@ -68,6 +68,28 @@ spec:
           /
           ( sum(rate(nginx_ingress_controller_requests{namespace="demo-prod-amer-west",canary="demo-prod-amer-west-rollouts-svc-canary-80"}[30s])) + 1 )
 ---
+# Source: deploy/templates/analysis.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: response-time
+spec:
+  metrics:
+  - name: response-time
+    interval: 15s
+    # NOTE: prometheus queries return results in the form of a vector.
+    # So it is common to access the index 0 of the returned array to obtain the value
+    # If there is no traffic to demo app during rollout we will have empty set.
+    successCondition: len(result) == 0 || result[0] <= 1.5
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://prometheus-server.prometheus.svc.cluster.local
+        query: |
+          rate(nginx_ingress_controller_response_duration_seconds_sum{namespace="demo-prod-amer-west",method="POST",canary="demo-prod-amer-west-rollouts-svc-canary-80"}[30s])
+          /
+          rate(nginx_ingress_controller_response_duration_seconds_count{namespace="demo-prod-amer-west",method="POST",canary="demo-prod-amer-west-rollouts-svc-canary-80"}[30s]) + 1
+---
 # Source: deploy/templates/loadgen.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
@@ -104,13 +126,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:15-yellow"
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:19-green"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "15-yellow"
+              value: "19-green"
             - name: STAGE
               value: prod-amer-west
             - name: NAMESPACE
@@ -129,7 +151,8 @@ spec:
       analysis:
         templates:
         - templateName: success-rate
-        startingStep: 4
+        - templateName: response-time
+        startingStep: 3
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
