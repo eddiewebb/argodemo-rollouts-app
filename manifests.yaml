@@ -68,6 +68,28 @@ spec:
           /
           ( sum(rate(nginx_ingress_controller_requests{namespace="demo-dev",canary="demo-dev-rollouts-svc-canary-80"}[30s])) + 1 )
 ---
+# Source: deploy/templates/analysis.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: response-time
+spec:
+  metrics:
+  - name: response-time
+    interval: 15s
+    # NOTE: prometheus queries return results in the form of a vector.
+    # So it is common to access the index 0 of the returned array to obtain the value
+    # If there is no traffic to demo app during rollout we will have empty set.
+    successCondition: len(result) == 0 || result[0] <= 1.5
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://prometheus-server.prometheus.svc.cluster.local
+        query: |
+          (rate(nginx_ingress_controller_response_duration_seconds_sum{namespace="demo-dev",status="200",canary="demo-dev-rollouts-svc-canary-80"}[30s])) 
+          /
+          (rate(nginx_ingress_controller_response_duration_seconds_count{namespace="demo-dev",canary="demo-dev-rollouts-svc-canary-80"}[30s])) + 1
+---
 # Source: deploy/templates/loadgen.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
@@ -129,7 +151,8 @@ spec:
       analysis:
         templates:
         - templateName: success-rate
-        startingStep: 4
+        - templateName: response-time
+        startingStep: 3
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
