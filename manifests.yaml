@@ -81,7 +81,7 @@ spec:
     # So it is common to access the index 0 of the returned array to obtain the value
     # If there is no traffic to demo app during rollout we will have empty set.
     successCondition: len(result) == 0 || result[0] <= 1.5
-    failureLimit: 3
+    failureLimit: 2
     provider:
       prometheus:
         address: http://prometheus-server.prometheus.svc.cluster.local
@@ -126,13 +126,13 @@ spec:
         app: rollouts-app
     spec:
       containers:
-        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:18-red"
+        - image: "ghcr.io/akuity/sedemo-monorepo-rollouts-app:20-blue"
           name: rollouts-app
           ports:
             - containerPort: 8080
           env:
             - name: SEMVER
-              value: "18-red"
+              value: "20-blue"
             - name: STAGE
               value: staging
             - name: NAMESPACE
